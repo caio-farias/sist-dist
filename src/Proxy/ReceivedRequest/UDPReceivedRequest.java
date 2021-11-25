@@ -16,6 +16,7 @@ public class UDPReceivedRequest {
 
   public UDPReceivedRequest(DatagramSocket socket) throws IOException {
     this.socket = socket;
+    socket.setSoTimeout(3000);
     packetBuffer = new byte[this.socket.getReceiveBufferSize()];
     packet = new DatagramPacket(packetBuffer, packetBuffer.length);
     this.socket.receive(packet);
@@ -36,7 +37,6 @@ public class UDPReceivedRequest {
       header = payload.substring(0, division);
       path = header.split("\n")[0].split(" ")[1].replace("\r", "");
     } catch (Exception e) {
-      //TODO: handle exception
     }
   }
 

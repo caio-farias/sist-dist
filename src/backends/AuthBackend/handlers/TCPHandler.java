@@ -17,6 +17,8 @@ public class TCPHandler implements Handler{
   public TCPHandler(ServerSocket serverSocket, boolean verbose) throws IOException{ 
     this.serverSocket = serverSocket;
     this.verbose = verbose;
+    System.out.println(">> Listening with CRUD/TCP and HTTP on port " 
+          + serverSocket.getLocalPort());
   }
   
   private void logger(){
@@ -28,19 +30,14 @@ public class TCPHandler implements Handler{
 
   @Override
   public void run() {
-    try {
-      System.out.println(">> Listening with CRUD/TCP and HTTP on port " 
-        + serverSocket.getLocalPort());
-      while(true){
+    while(true){
+      try {
         socket = serverSocket.accept();
         receiveMessage();
-        logger();
         replyMessage();
+      } catch (Exception e) {
+        System.out.println("Socket error..");
       }
-    } catch (Exception e) {
-      System.out.println("Server crashed..");
-    }finally {
-      terminateHandler();
     }
   }
 
@@ -49,7 +46,7 @@ public class TCPHandler implements Handler{
     try {
       request  = new TCPReceivedRequest(socket);
     } catch (Exception e) {
-      // System.out.println("Error on reading request..");
+      System.out.println("Error on reading request TCP..");
     }    
   }
   
@@ -60,6 +57,7 @@ public class TCPHandler implements Handler{
         new HTTPResolver(request).run();
         return;
       }
+      logger();
       new TCPResolver(request).run();
     } catch (Exception e) {
       // System.out.println("Error on replying request..");
@@ -73,7 +71,6 @@ public class TCPHandler implements Handler{
       System.err.println(socket.toString() + " ~> closing");
     } catch (IOException e) {
       System.out.println("Error when closing server..");
-
     }
   }
 }

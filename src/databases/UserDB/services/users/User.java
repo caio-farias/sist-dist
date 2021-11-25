@@ -48,8 +48,6 @@ public class User {
       setUsername(user.getUsername());
       
     } catch (Exception e) {
-
-      System.out.println(content);
     }
   }
 

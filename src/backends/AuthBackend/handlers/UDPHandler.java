@@ -27,17 +27,11 @@ public class UDPHandler implements Handler{
 
   @Override
   public void run() {
-    try {
-      while(true){
-        receiveMessage();
-        logger();
-        replyMessage();
-      }
-    } catch (Exception e) {
-      System.err.println("Cannot open the port on UDP");
-
-    }finally{
-      System.out.println("Closing UDP server");
+    while(true){
+      try {
+          receiveMessage();
+          replyMessage();
+      } catch (Exception e) { }
     }
   }
   

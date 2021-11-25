@@ -17,7 +17,7 @@ public class UserDB{
   private int port;
   private Semaphore semaphore;
   private ServerSocket serverSocket;
-  final int POOL_SIZE = 40;
+  final int POOL_SIZE = 5;
   final boolean verbose = false;
 
   public UserDB(String port) throws IOException {

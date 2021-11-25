@@ -17,7 +17,7 @@ public class AuthDB{
   private int port;
   private Semaphore semaphore;
   private ServerSocket serverSocket;
-  final int POOL_SIZE = 40;
+  final int POOL_SIZE = 5;
   private final boolean verbose = false;
 
   public AuthDB(String port) throws IOException {

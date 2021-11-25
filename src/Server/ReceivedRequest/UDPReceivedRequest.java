@@ -17,6 +17,7 @@ public class UDPReceivedRequest {
     this.socket = socket;
     packetBuffer = new byte[this.socket.getReceiveBufferSize()];
     packet = new DatagramPacket(packetBuffer, packetBuffer.length);
+    socket.setSoTimeout(3000);
     this.socket.receive(packet);
     readMessageFromPacket();
   }
@@ -25,17 +26,21 @@ public class UDPReceivedRequest {
     try {
       payload = "";
       byte[] bytes = packet.getData();
+
       for(byte b : bytes){
         if((int)b == 0)
           break;
         payload += (char) b;
       }
+
+      if(payload.equals("alive?")){
+        socket.send(packet);
+      }
+
       int division = payload.indexOf('{');
       body = payload.substring(division);
       header = payload.substring(0, division);
-    } catch (Exception e) {
-      //TODO: handle exception
-    }
+    } catch (Exception e) { }
   }
 
   public String getBody() {

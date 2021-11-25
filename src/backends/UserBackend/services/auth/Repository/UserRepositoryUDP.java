@@ -11,7 +11,6 @@ import backends.UserBackend.services.auth.User;
 public class UserRepositoryUDP {
   private final InetAddress address;
   private final int mainPort = 8091;
-  private final int backupPort = 8093;
 
   public UserRepositoryUDP(String url) throws UnknownHostException {
     address = InetAddress.getByName(url);
@@ -23,10 +22,6 @@ public class UserRepositoryUDP {
     try {
       request = new UDPRequest(requestPayload, address, mainPort);
       body = request.sendAndAwaitResponse();
-      if(body == null){
-        request = new UDPRequest(requestPayload, address, backupPort);
-         body = request.sendAndAwaitResponse();
-      }
       return body;
     } catch (SocketException e) {
 

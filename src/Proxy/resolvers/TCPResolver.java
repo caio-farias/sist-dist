@@ -4,89 +4,67 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
+import Proxy.LoadBalancer.LoadBalancer;
+import Proxy.LoadBalancer.Resource;
+import Proxy.LoadBalancer.ResourceBalancer;
 import Proxy.ReceivedRequest.TCPReceivedRequest;
 import Proxy.Request.TCPRequest;
 import Proxy.Response.TCPResponse;
-import Proxy.models.ResourceBalancer;
 
 public class TCPResolver {
   private final TCPReceivedRequest request;
   private final String path;
   private final String payload;
-  private final ResourceBalancer authBalancer; 
-  private final ResourceBalancer userBalancer;
-  
-  
+  private final ResourceBalancer resourceBalancer;
+  private final boolean applyRedundancy;
   public TCPResolver(
     TCPReceivedRequest request,
-    ResourceBalancer authBalancer, 
-    ResourceBalancer userBalancer
+    LoadBalancer loadBalancer
     ){
     this.request = request;
     path = request.getPath();
     payload = request.getPayload();
-    this.authBalancer = authBalancer;
-    this.userBalancer = userBalancer;
+    applyRedundancy = loadBalancer.isRedundant();
+    resourceBalancer = loadBalancer.getResourceBalancerByName(path);
   }
     
   public void run(){
-    checkPathAndTryResource();
+    try {
+      initRequest();
+    } catch (SocketException | UnknownHostException e) {
+      e.printStackTrace();
+    }
   }
-
-  private void checkPathAndTryResource(){
-    if(path.equals("users")){
-      checkUsersService();
+  
+  private void initRequest() throws SocketException, UnknownHostException{
+    String newPayload = payload;
+    if(applyRedundancy){
+      newPayload = payload.replaceFirst("/" + path, "");
+      ArrayList<Resource> rList =  resourceBalancer.getAvailableResources();
+      for(Resource r: rList){
+        tryUseResource(
+          newPayload, 
+          r.getIp(),
+          r.getPort()
+        );
+      }
       return;
-    }else if(path.equals("auth")){
-      checkAuthService();
-      return;
+    }else{
+      newPayload = payload.replaceFirst("/" + path, "");
+      Resource resource = resourceBalancer.getResource();
+      if(resourceBalancer.getResource() == null)
+        return;
+  
+      tryUseResource(
+        newPayload, 
+        resource.getIp(),
+        resource.getPort()
+      );
     }
   }
 
-  private void checkAuthService(){
-    String newPayload = payload.replace(" " + path, "");
-    try {
-		  tryUseResource(
-        newPayload, 
-        "127.0.0.1",
-        authBalancer.getPort()
-      );
-		} catch (SocketException | UnknownHostException e) {
-      try {
-        tryUseResource(
-          newPayload, 
-          "127.0.0.1", 
-          authBalancer.getPort()
-        );
-      } catch (SocketException | UnknownHostException e1) {
-        e1.printStackTrace();
-      }
-		}
-  }
-
-  private void checkUsersService(){
-    String newPayload = payload.replace(" " + path, "");  
-    try {
-      tryUseResource(
-        newPayload, 
-        "127.0.0.1", 
-        userBalancer.getPort()
-      );
-		} catch (SocketException | UnknownHostException e) {
-
-      try {
-        tryUseResource(
-          newPayload, 
-          "127.0.0.1", 
-          userBalancer.getPort()
-        );
-      } catch (SocketException | UnknownHostException e1) {
-        e1.printStackTrace();
-      }
-		}
-  }
- 
   private void tryUseResource(String newPayload, String url, int port) 
     throws SocketException, UnknownHostException 
     {

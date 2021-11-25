@@ -13,7 +13,6 @@ public class AuthRepositoryTCP {
   private final InetAddress address;
   private final boolean useHTTP;
   private final int mainPort = 8081;
-  private final int backupPort = 8083;
 
   public AuthRepositoryTCP(String url, boolean useHTTP) throws UnknownHostException{
     address = InetAddress.getByName(url);
@@ -26,13 +25,9 @@ public class AuthRepositoryTCP {
     try {
       request = new TCPRequest(requestPayload, address, mainPort, useHTTP);
       body = request.sendAndAwaitResponse();
-        if(body == null){
-          request = new TCPRequest(requestPayload, address, backupPort, useHTTP);
-          body = request.sendAndAwaitResponse();
-        }
       return body;
     } catch (Exception e) {
-
+      System.out.println("Proxy DOWN!");
     }
 		return null;
   }

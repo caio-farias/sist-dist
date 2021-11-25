@@ -12,8 +12,8 @@ public class AuthBackend{
   private ExecutorService udpExecutorService;
   private int port;
   private ServerSocket serverSocket;
-  final int POOL_SIZE = 40;
-  private final boolean verbose = false;
+  final int POOL_SIZE = 5;
+  private final boolean verbose = true;
 
   public AuthBackend(String port) throws IOException {
     this.port = Integer.parseInt(port);

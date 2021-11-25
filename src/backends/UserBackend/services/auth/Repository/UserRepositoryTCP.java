@@ -12,7 +12,6 @@ public class UserRepositoryTCP {
   private final InetAddress address;
   private final boolean useHTTP;
   private final int mainPort = 8091;
-  private final int backupPort = 8093;
   
   public UserRepositoryTCP(String url, boolean useHTTP) throws UnknownHostException{
     address = InetAddress.getByName(url);
@@ -25,10 +24,6 @@ public class UserRepositoryTCP {
     try {
       request = new TCPRequest(requestPayload, address, mainPort, useHTTP);
       body = request.sendAndAwaitResponse();
-        if(body == null){
-          request = new TCPRequest(requestPayload, address, backupPort, useHTTP);
-          body = request.sendAndAwaitResponse();
-        }
       return body;
     } catch (Exception e) {
 

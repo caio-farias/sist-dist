@@ -30,7 +30,6 @@ public class TCPResponse {
       out.close();
       socket.close();
     } catch (Exception e) {
-      //TODO: handle exception
     }
   }
 }

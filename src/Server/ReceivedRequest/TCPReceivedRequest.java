@@ -40,26 +40,32 @@ public class TCPReceivedRequest {
     try { 
       InputStream in = socket.getInputStream();
       BufferedInputStream bf = new BufferedInputStream(in);
-      int dataInt = bf.read();
       String protocolHeader = "";
-
-      while((char) dataInt != '\n'){
-        protocolHeader += (char) dataInt;
+      
+      int dataInt = -1;
+      while(true){
         dataInt = bf.read();
+        if((char) dataInt == '\n')
+          break;
+        protocolHeader += (char) dataInt;
+      }
+      
+      if(protocolHeader.length() == 1){
+        readAsCRUD(bf);
+        method = protocolHeader;
+        header = method + '\n' + header;
+        return;
       }
 
       String[] headerInfo = protocolHeader.split("\n")[0].split(" ");
       boolean isNoBody = headerInfo[0].equals("GET") || headerInfo[0].equals("DELETE");
-
       if(protocolHeader.contains("HTTP") && !isNoBody){
         readAsHTTP(bf);
       }else if (!isNoBody)
         readAsCRUD(bf);
       
       header = protocolHeader + '\n' + header;
-    } catch (Exception e) {
-
-    }
+    } catch (Exception e) {}
   }
 
   private void readAsHTTP(BufferedInputStream bf) throws IOException {
@@ -110,7 +116,6 @@ public class TCPReceivedRequest {
       }
       body = new String(bytesBody);
     } catch (Exception e) {
-      //TODO: handle exception
     }
   }
 

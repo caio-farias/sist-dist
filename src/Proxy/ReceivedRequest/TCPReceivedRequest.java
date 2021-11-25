@@ -111,7 +111,6 @@ public class TCPReceivedRequest {
       }
       body = new String(bytesBody);
     } catch (Exception e) {
-      //TODO: handle exception
     }
   }
 

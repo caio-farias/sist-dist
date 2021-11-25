@@ -12,7 +12,6 @@ import backends.AuthBackend.services.auth.User;
 public class AuthRepositoryUDP {
   private final InetAddress address;
   private final int mainPort = 8081;
-  private final int backupPort = 8083;
 
   public AuthRepositoryUDP(String url) throws UnknownHostException {
     address = InetAddress.getByName(url);
@@ -24,13 +23,9 @@ public class AuthRepositoryUDP {
     try {
       request = new UDPRequest(requestPayload, address, mainPort);
       body = request.sendAndAwaitResponse();
-      if(body == null){
-        request = new UDPRequest(requestPayload, address, backupPort);
-         body = request.sendAndAwaitResponse();
-      }
       return body;
     } catch (SocketException e) {
-
+      System.out.println("Proxy DOWN!");
     }
     return null;
   }

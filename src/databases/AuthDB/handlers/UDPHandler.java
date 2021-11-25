@@ -30,17 +30,12 @@ public class UDPHandler implements Handler{
 
   @Override
   public void run() {
-    try {
-      while(true){
-        receiveMessage();
-        logger();
-        replyMessage();
-      }
-    } catch (Exception e) {
-      System.err.println("Cannot open the port on UDP");
-
-    }finally{
-      System.out.println("Closing UDP server");
+    while(true){
+      try {
+          receiveMessage();
+          logger();
+          replyMessage();
+      } catch (Exception e) { }
     }
   }
   
@@ -48,18 +43,13 @@ public class UDPHandler implements Handler{
   public void receiveMessage(){
     try {
       request =  new UDPReceivedRequest(socket);
-    } catch (Exception e) {
-      System.out.println("Error on reading message with UDP..");
-
-    }
+    } catch (Exception e) {}
   }
 
   @Override
   public void replyMessage(){
     try {
       new UDPResolver(request, userRepository).run();
-    } catch (IOException e) {
-
-    }
+    } catch (IOException e) {}
   }  
 }

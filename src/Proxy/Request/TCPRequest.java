@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 public class TCPRequest {
-  private final Socket socket;
+  private Socket socket;
   private final String requestContent;
   private static DataOutputStream out;
   private String responseHeader;
@@ -20,10 +20,18 @@ public class TCPRequest {
     String requestContent,
     InetAddress address,  
     int remotePort, 
-    boolean isHTTP) throws IOException
+    boolean isHTTP)
     {
-    socket = new Socket(address.getHostAddress(), remotePort);
-    out = new DataOutputStream(socket.getOutputStream());
+    try {
+      socket = new Socket(address.getHostAddress(), remotePort);
+    } catch (IOException e) {
+      
+    }
+    try {
+      out = new DataOutputStream(socket.getOutputStream());
+    } catch (IOException e) {
+      
+    }
     this.requestContent = requestContent;
     this.isHTTP = isHTTP;
   }
