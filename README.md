@@ -1,4 +1,4 @@
-# sist-dist: O pior protótipo de sistema distribuído em Java
+# sist-dist: o pior protótipo de sistema distribuído em Java
 
 ## Visão Geral do Projeto
 Este é um protótipo básico de um sistema distribuído usando `java.net`. Espere um código terrível.
